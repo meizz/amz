@@ -1,0 +1,67 @@
+///import amz;
+
+/**
+ * @description 枚举目标对象中的每一个元素，进行指定函数操作
+ *
+ * @author meizz
+ * @create 2012-05-04
+ * @modify
+ *
+ * @function
+ * @name amz.each
+ * @grammer amz.each( enumerable, iterator[, context] )
+ *
+ * @param   {Object}        enumerable      被枚举的对象（Array|ArrayLike|NodeList|String|Number|arguments|ArrayBuffer）
+ * @param   {Function}      iterator        遍历操作的函数
+ * @param   {Object}        context         [可选]作用域
+ * @return  {ArrayLike}     arrayLike
+ */
+amz.each = function( enumerable, iterator, context ) {
+    var i, n, t, result;
+
+    if ( typeof iterator == "function" && enumerable) {
+
+        n = typeof enumerable.length == "number" ? enumerable.length : enumerable.byteLength;
+        // Array or ArrayLike or NodeList or arguments or function or String or ArrayBuffer
+        if ( typeof n == "number" ) {
+
+            // 20121030 function.length
+            //safari5.1.7 can not use typeof to check nodeList - linlingyu
+            if (Object.prototype.toString.call(enumerable) === "[object Function]") {
+                return enumerable;
+            }
+
+            for ( i=0; i<n; i++ ) {
+
+                t = enumerable[ i ] || (enumerable.charAt && enumerable.charAt( i ));
+
+                // 被循环执行的函数，默认会传入三个参数(i, array[i], array)
+                result = iterator.call( context || t, i, t, enumerable );
+
+                // 被循环执行的函数的返回值若为 false 和"break"时可以影响each方法的流程
+                if ( result === false || result == "break" ) {break;}
+            }
+        
+        // enumerable is number
+        } else if (typeof enumerable == "number") {
+
+            for (i=0; i<enumerable; i++) {
+                result = iterator.call( context || i, i, i, i);
+                if ( result === false || result == "break" ) { break;}
+            }
+        
+        // enumerable is json
+        } else if (typeof enumerable == "object") {
+
+            for (i in enumerable) {
+                if ( enumerable.hasOwnProperty(i) ) {
+                    result = iterator.call( context || enumerable[ i ], i, enumerable[ i ], enumerable );
+
+                    if ( result === false || result == "break" ) { break;}
+                }
+            }
+        }
+    }
+
+    return enumerable;
+};
