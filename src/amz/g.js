@@ -18,7 +18,7 @@ amz.g = function(obj, owner) {
         return (owner||document).getElementById(obj);
     } else if (obj.nodeName && (obj.nodeType == 1 || obj.nodeType == 9)) {
         return obj;
-    } else if (obj.jquery || obj._type_ == "$DOM") {
+    } else if (obj[0] && obj[0].nodeName ) {
         return obj[0];
     }
     return null;

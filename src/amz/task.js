@@ -16,7 +16,7 @@ amz.createChain("task",
         return new amz.task.$Task(fn);
     },
     // constructor
-    function Task(task){
+    function(task){
         this.finalTask = amz.isFunction(task) ? [task] : [];
         this.queue = [];
         this.interval = 16;

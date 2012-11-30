@@ -21,6 +21,11 @@ amz.isPlainObject = function(unknow) {
         return false;
     }
 
+    // NodeList for IE6,7,8  20121130
+    if ( unknow.item && typeof unknow.length == "number" ) {
+        return false;
+    }
+
     //判断new fn()自定义对象的情况
     //constructor不是继承自原型链的
     //并且原型中有isPrototypeOf方法才是Object
@@ -32,6 +37,6 @@ amz.isPlainObject = function(unknow) {
     //判断有继承的情况
     //如果有一项是继承过来的，那么一定不是字面量Object
     //OwnProperty会首先被遍历，为了加速遍历过程，直接看最后一项
-    for ( key in unknow ) {}
+    for ( key in unknow ) break;
     return key === undefined || hasOwnProperty.call( unknow, key );
 };

@@ -1,4 +1,5 @@
 ///import amz._extend;
+///import amz.isString;
 ///import amz.base.Class;
 
 /**
@@ -10,16 +11,15 @@
  *
  * @function
  * @name amz.createSingle
- * @grammer amz.createSingle( prototype )
+ * @grammer amz.createSingle( prototype[, type] )
  *
- * @param   {object}        prototype   直接挂载到这个单例里的预定属性/方法
+ * @param   {object}        methods   直接挂载到这个单例里的预定属性/方法
  * @param   {string}        type        类名
  * @return  {object}        类的实例
  */
-
-amz.createSingle = function (prototype, type) {
+amz.createSingle = function (methods, type) {
     var me = new amz.base.Class();
-    type && ( me._type_ = type );
-    return amz._extend(me, prototype);
+    amz.isString(type) && ( me._type_ = type );
+    return amz._extend(me, methods);
 };
 

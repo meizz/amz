@@ -18,14 +18,13 @@
  * @remark amz.base.Class和它的子类的实例均包含一个全局唯一的标识guid。guid是在构造函数中生成的，因此，继承自amz.base.Class的类应该直接或者间接调用它的构造函数。<br>amz.base.Class的构造函数中产生guid的方式可以保证guid的唯一性，及每个实例都有一个全局唯一的guid。
  */
 amz.base.Class = (function() {
-    amz._global_ = window[ amz.guid ];
-    var instances = amz._global_._instances_;
-    !instances && (instances = amz._global_._instances_ = {});
+    var instances = (amz._global_ = window[amz.guid])._instances_;
+    instances || (instances = amz._global_._instances_ = {});
 
     // constructor
     return function() {
         this.guid = amz.id();
-        !this._decontrol_ && (instances[this.guid] = this);
+        this._decontrol_ || (instances[this.guid] = this);
     }
 })();
 
@@ -36,7 +35,7 @@ amz._extend(amz.base.Class.prototype, {
      * 20111219 meizz 为支持老版本的className属性，以后统一改成 _type_
      * @return {string} 对象的String表示形式
      */
-    toString: function(){
+    toString: amz.base.Class.prototype.toString/*for IE6*/ = function(){
         return "[object " + ( this._type_ || "Object" ) + "]";
     }
 

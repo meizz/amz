@@ -1,4 +1,4 @@
-///import amz.forEach;
+///import amz;
 
 /**
  * @description 判断对象类型
@@ -14,34 +14,36 @@
  * @return  {String}            对应对象类型的字符串
  */
 amz.type = (function() {
-    var objectType = {},
-        nodeType = [, "HTMLElement", "Attribute", "Text", , , , , "Comment", "Document", , "DocumentFragment", ],
-        str = "Array Boolean Date Error Function Number RegExp String",
-        toString = objectType.toString;
+    var toString = Object.prototype.toString,
+        types = {"[object NodeList]": "NodeList", "[object HTMLCollection]": "NodeList"},
+        boms = [, "HTMLElement", "Attribute", "Text", , , , , "Comment", "Document", , "DocumentFragment", ],
+        array = ["Arguments", "Array", "Boolean", "Date", "Error", "Function", /*"JSON", "Math",*/ "Number", "RegExp", "String"];
 
-    // 给 objectType 集合赋值，建立映射
-    amz.forEach(str.split(" "), function(name) {
-        objectType[ "[object " + name + "]" ] = name.toLowerCase();
+    // 给 types 集合赋值，建立映射
+    for(var i=0, n=array.length, type; i<n; i++) {
+        type = array[i];
+        types[ "[object "+ type +"]" ] = type.toLowerCase();
 
-        amz[ "is" + name ] = function ( unknow ) {
-            return amz.type(unknow) == name.toLowerCase();
+        amz[ "is"+ type ] = function( unknow ) {
+            return amz.type( unknow ) == type.toLowerCase();
         }
-    });
+    }
 
-    // 方法主体
+    // main function
     return function ( unknow ) {
         var s = typeof unknow;
 
-        return s != "object" ? s
+        return !~"object|function".indexOf(s) ? s
             : unknow == null ? "null"
             : unknow._type_
-                || objectType[ toString.call( unknow ) ]
-                || nodeType[ unknow.nodeType ]
+                || types[ toString.call( unknow ) ]
+                || boms[ unknow.nodeType ]  // duck typing
                 || ( unknow == unknow.window ? "Window" : "" )
                 || "object";
     };
 })();
 
+// 20121130 在Safari 5.1.7中 typeof NodeList 为 function，没见过样坑人的
 /*
  1-ELEMENT
  2-ATTRIBUTE

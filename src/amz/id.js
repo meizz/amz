@@ -67,6 +67,6 @@ amz.id = function() {
             return maps[ object ];
         }
 
-        return "AMZ__" + amz._global_._counter ++;
+        return "AMZ_" + amz._global_._counter ++;
     };
 }();

@@ -1,3 +1,4 @@
+///import amz._extend;
 ///import amz.isArray;
 ///import amz.isObject;
 ///import amz.isBoolean;
