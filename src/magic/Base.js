@@ -55,4 +55,24 @@ amz.base.inherits(magic.Base, amz.base.Class, "magic.Base").extend({
         }
         return this;
     }
+
+    // 私有方法，与 .render() 方法配合使用
+    ,_render: function(html, container) {
+        // 指定容器则直接innerHTML插入
+        if (amz.isElement(container)) {
+            container.innerHTML = html;
+            this.fire("onrender");
+
+        // 没有容器则返回 HTML 以便用户自己决定如何处理
+        } else {
+            var me = this;
+            var timer = setInterval(function(){
+                if (me.getElement()) {
+                    clearInterval(timer);
+                    me.fire("onrender");
+                }
+            }, 14);
+            return html;
+        }
+    }
 });

@@ -7,8 +7,8 @@
  * @create 2012-06-01
  *
  * @function
- * @name amz.extend
- * @grammar amz.extend([depthClone,] obj0[, obj1[, obj2....]])
+ * @name amz._extend
+ * @grammar amz._extend(obj0[, obj1[, obj2....]])
  *
  * @param   {Object}    target  接受其它对象向我拷贝
  * @param   {Object}    source  被拷贝的对象

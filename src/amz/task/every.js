@@ -1,5 +1,5 @@
 ///import amz.task;
-///import amz.isEnumerable;
+///import amz.isArrayLike;
 
 /**
  * @description 判断某一组对象，都符合指定的条件
@@ -13,7 +13,7 @@
  */
 amz.task.extend({
     every: function(array, iterator){
-        if ( amz.isEnumerable(array) ) {
+        if ( amz.isArrayLike(array) ) {
             this.queue.push( function(){
                 for (var i=0, n=array.byteLength||array.length; i<n; i++) {
                     if (!iterator(array[i], i, array)) return false;

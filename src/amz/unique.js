@@ -1,5 +1,5 @@
 ///import amz.isFunction;
-///import amz.isEnumerable;
+///import amz.isArrayLike;
 
 /**
  * @description 去除 ArrayLike 中的重复项
@@ -13,16 +13,6 @@
  * @param   {Function}      fn      [可选]用于做除重对比的函数
  * @return  {Array}                 已经除重后的对象
  */
-
-/**
- * @description 去除数组中的重复项
- *
- * @name amz.unique()
- * @function
- * @grammar $Array.unique([fn])
- * @param   {Function}      fn  用于做除重对比的函数
- * @return  {Array}             已经除重后的数组
- */
 amz.unique = function (list, fn) {
     var isEqual = function(item1, item2) {return item1 === item2;};
     var cloneList = function(list){
@@ -34,7 +24,7 @@ amz.unique = function (list, fn) {
     }
 
     return function(list, fn) {
-        if (!amz.isEnumerable(list)) return list;
+        if (!amz.isArrayLikelist)) return list;
         amz.isFunction(fn) || ( fn = isEqual );
 
         var len = list.length,

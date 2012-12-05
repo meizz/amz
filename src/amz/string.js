@@ -1,6 +1,6 @@
-///import amz.createChain;
-///import amz.forEach;
 ///import amz.type;
+///import amz._extend;
+///import amz.createChain;
 
 /**
  * @description string对象链式语法的链头，操作字符串
@@ -15,11 +15,9 @@
 
 amz.createChain("string",
 
-    function(string){
-        var type = amz.type(string),
-            obj = new String(~'string|number'.indexOf(type) ? string : "");
+    function(str){
+        str = new String(~'string|number'.indexOf(amz.type(str)) ? str : "");
 
-        amz.forEach(amz.string.fn, function(item, index) { obj[ index ] = item; });
-        return obj;
+        return amz._extend( str, amz.string.fn );
     }
 );
