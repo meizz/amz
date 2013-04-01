@@ -1,6 +1,5 @@
 ///import amz.type;
 ///import amz.isString;
-///import amz.regexp;
 
 /**
  * @description 分析形参对象的类型
@@ -38,7 +37,7 @@ amz.check = function() {
 
         var caller, arg, i, n,
             types = "",
-            reg = amz.regexp(rs, "i");
+            reg = new RegExp(rs, "i");
 
         // 检查指定的对象(列)
         if (arguments.length > 2) {

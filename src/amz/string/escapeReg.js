@@ -6,15 +6,13 @@
  * @create 2012-12-03
  * @function 
  * @name amz.string.escapeReg
- * @grammar amz.string(str).escapeReg()
+ * @grammar amz.string.escapeReg(str)
  * @return  {String}    转义后的字符串
  */
-amz.string.extend({
-    escapeReg: function() {
-        var reg = /([.*+?^=!:\x24{}()|[\]\/\\])/g;
+amz.string.escapeReg = function() {
+    var reg = /([.*+?^=!:\x24{}()|[\]\/\\])/g;
 
-        return function() {
-            return this.replace(reg, '\\\x241');
-        }
-    }()
-});
+    return function(str) {
+        return str.replace(reg, '\\\x241');
+    }
+}();

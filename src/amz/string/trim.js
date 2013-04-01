@@ -6,15 +6,13 @@
  * @create 2012-12-03
  * @function 
  * @name amz.string.trim
- * @grammar amz.string(str).trim()
+ * @grammar amz.string.trim(str)
  * @return  {String}    删除两端空白字符后的字符串
  */
-amz.string.extend({
-    trim: function(){
-        var reg = /(^[\s\xA0\uFEFF\u3000]+)|([\u3000\uFEFF\xA0\s]+\x24)/g;
+amz.string.trim = function(){
+    var reg = /(^[\s\xA0\uFEFF\u3000]+)|([\u3000\uFEFF\xA0\s]+\x24)/g;
 
-        return function(){
-            return this.valueOf().replace(reg, "");
-        }
-    }()
-});
+    return function(str){
+        return str.replace(reg, "");
+    }
+}();

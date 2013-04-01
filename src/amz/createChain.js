@@ -1,4 +1,4 @@
-///import amz._extend;
+///import amz.extend;
 
 /**
  * @description 创建链头对象，用于链式语法
@@ -22,12 +22,12 @@ amz.createChain = function(chainName, fn, constructor) {
 
     // 构建链头执行方法
     var chain = amz[chainName] = amz[chainName] || fn || function(object) {
-        return amz._extend(object, amz[chainName].fn);
+        return amz.extend(object, amz[chainName].fn);
     };
 
     // 扩展 .extend 静态方法，通过本方法给链头对象添加原型方法
     chain.extend = function(extended) {
-        return amz._extend(amz[chainName].fn, extended);
+        return amz.extend(amz[chainName].fn, extended);
     };
 
     // 创建 链头对象 构造器

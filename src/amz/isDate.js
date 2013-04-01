@@ -14,5 +14,5 @@
  * @return  {Boolean}           true|false
  */
 amz.isDate = function( unknow ) {
-    return amz.type(unknow) == "date" && unknow.toString() != 'Invalid Date' && !isNaN(unknow);
+    return amz.type(unknow) == "date" && unknow.toString() != "Invalid Date" && !isNaN(unknow);
 };

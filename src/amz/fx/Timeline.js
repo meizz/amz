@@ -1,140 +1,104 @@
-///import amz.base.inherits;
+///import amz.extend;
+///import amz.fx.Effect;
+///import amz.isFunction;
 ///import amz.base.Class;
+///import amz.base.inherits;
 
 /**
- * @description 提供一个按时间进程的时间线类
+ * 时间轴对象，可以在该时间轴上挂载许多的片断(section)
+ * @author meizz
+ * @create 2013-3-21
  * @class
  * @name amz.fx.Timeline
- * @grammer amz.fx.Timeline([options])
- * @author meizz
- * @create 2012-09-28
- *
- * 本类提供两个方法：
- *  abort()     中断
- *  cancel()    取消操作
- *  end()       直接结束
- *  pause()     暂停
- *  play()      启动
- *
- * 事件：
- *  onbeforestart
- *  onupdate
- *  onafterfinish
- *  onabort
- *  oncancel
- *  onend
- *  onpause
- *  ondispose
- *
- * 使用本类时需要实现五个接口：
- *  initialize()            用于类初始化时的操作
- *  transition(schedule)    重新计算时间线进度曲线
- *  finish()                用于类结束时时的操作
- *  render(schedule)        每个脉冲在DOM上的效果展现
- *  restore()               效果被取消时作的恢复操作
- *
- * @config {Number} interval 脉冲间隔时间（毫秒）
- * @config {Number} duration 时间线总时长（毫秒）
- * @config {Number} schedule 时间线进度的百分比（0.0-1.0）
- * @config {Number} delay    延迟（毫秒）
- * @config {Number} delta    步长，两帧之间的进度差（毫秒）
- * @config {Number} form     起始点（0.0-1.0）
- * @config {Number} to       终止点（0.0-1.0）
- * @config {Boolean}transitional    连续渐变的
+ * @grammar new amz.fx.Timeline([options])
  */
-amz.fx.Timeline = function(options) {
+amz.fx.Timeline = function( options ) {
     amz.base.Class.call(this);
 
-    this.interval = 16;
-    this.duration = 500;
-    this.delay    = 0;  // 0立即执行 n延迟n毫秒 -1只实例化不执行(用于效果组合)
-    this.from     = 0;
-    this.to       = 1;
-    this.minFrames= 0;
-    this.transitional   = true;   // 连续渐变的
+    this.interval = 12;
+    this.fps = 80;              // max fps
 
-    this.delta    = 0;  // 每次脉冲的间隔步长
-    this.schedule = 0;  // 进度，0 到 1 (浮点小数)
+    this._effects_ = [];
+    this._sections_ = [];
 
     amz.extend(this, options);
 };
-
 amz.base.inherits(amz.fx.Timeline, amz.base.Class, "amz.fx.Timeline").extend({
-
-    launch: function(){return this.play(true);}
-
-    // 脉冲函数
+    section: function( time, effectOptions ){}
+    /**
+     * 脉冲函数
+     * @param  {Boolean} first 是否为第一次运行
+     */
     ,_pulsed_: function(first){
-        var me = this
-            , old = me.schedule
-            , now = new Date().getTime();
+        var me = this, item, fx, fn, i
+            ,now = new Date().getTime()
+            ,n = now - me._beginTime_;
 
-        first && (me._endTime_ = (me._beginTime_ = now) + me.duration);
+        for (i = me._sections_.length - 1; i >= 0; i--) {
+            if (n >= (item = me._sections_[i])[0]){
+                fx = new amz.fx.Effect( item[1] );
+                me._effects_[ fx.guid ] = fx.play;
+                me._sections_.splice(i, 1);
+                fn = function(e){delete me._effects_[e.currentTarget.guid]};
+                fx.on("finish", fn);
+                fx.on("abort", fn);
+            }
+        };
 
-        me.schedule = (now - me._beginTime_) / me.duration;
-        me.delta = me.schedule - old;
-
-        // 时间线终点
-        if (now >= me._endTime_) {
-            typeof me.render == "function" && me.render(me.transition(me.schedule = 1));
-            typeof me.finish == "function" && me.finish();
-
-            me.fire("onfinish");
-            me.fire("onafterfinish");
-            me.dispose();
-            return;
+        if (me._sections_.length) {
+            clearTimeout(me._timer_);
+            me._timer_ = setTimeout(function(){me._pulsed_()}, me.interval);
         }
-
-        /**
-         * [interface run] render() 用来实现每个脉冲所要实现的效果
-         * @param {Number} schedule 时间线的进度
-         */
-        typeof me.render == "function" && me.render(me.transition(me.schedule));
-        me.fire("onupdate");
-
-        me._timer_ = setTimeout(function(){me._pulsed_()}, me.interval);
     }
-    ,transition: function(schedule){return schedule;}
-
-    ,abort: function(){
-        this._timer_ && clearTimeout(this._timer_);
-        this.fire("onabort");
-        this.dispose();
-    }
-    ,cancel: function(){
-        this._timer_ && clearTimeout(this._timer_);
-        this._endTime_ = this._beginTime_;
-
-        typeof this.restore == "function" && this.restore();
-        this.fire("oncancel");
-        this.dispose();
-    }
-    ,end: function(){
-        this._timer_ && clearTimeout(this._timer_);
-        this._endTime_ = this._beginTime_;
-        this._pulsed_();
-    }
+    /**
+     * 暂停时间轴，包括正在运行的动画
+     * @return {amz.fx.Timeline} 时间轴对象
+     */
     ,pause: function(){
-        this._timer_ && clearTimeout(this._timer_);
-        this.fire("onpause");
-    }
-    ,play: function(first){
-        var me = this
-            , now = new Date().getTime();
+        var me = this, fx;
 
-        // first run
+        me._pauseTime_ = new Date().getTime();
+        for ( fx in me._effects_ ) me._effects_[fx].pause();
+        me.fire("onpause");
+
+        return me;
+    }
+    /**
+     * 中断时间轴
+     * @return {amz.fx.Timeline} 时间轴对象
+     */
+    ,abort: function(){
+        var me = this, fx;
+
+        for ( fx in me._effects_ ) me._effects_[fx].abort();
+        me.fire("onabort");
+
+        return me;
+    }
+    /**
+     * 时间轴正式开始运行
+     * @return {amz.fx.Timeline} 时间轴对象
+     */
+    ,play: function(){
+        var me = this
+            ,now = new Date().getTime()
+            ,first = !me._pauseTime_;
+
+        // first
         if (first) {
             me.fire("onbeforestart");
-            typeof me.initialize == "function" && me.initialize();
+            amz.isFunction(me.initialize) && me.initialize();
             me.fire("onstart");
 
-            if (me.delay) {setTimeout(function(){me._pulsed_(first)}, me.delay)}
-            else me._pulsed_(first);
-        
+            me.interval = Math.floor(1000 / me.fps);
+            me._beginTime_ = now;
+            me._pulsed_(first);
+
         // pause replay
         } else {
-            me._beginTime_ = now - parseInt(me.schedule * me.duration);
-            me._endTime_ = me._beginTime_ + me.duration;
+            for (var fx in me._effects_) me._effects_[ fx ].play();
+            me._beginTime_ = now - me._pauseTime_ + me._beginTime_;
+            me._pauseTime_ = false;
             me._pulsed_();
         }
 

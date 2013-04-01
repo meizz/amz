@@ -1,4 +1,3 @@
-///import amz.regexp;
 ///import amz.string;
 
 /**
@@ -7,15 +6,17 @@
  * @create 2012-11-20
  * @function 
  * @name amz.string.unicode
- * @grammar amz.string().unicode()
+ * @grammar amz.string.unicode(str)
  * @return  {String}        已经编码后的文本
  */
-amz.string.extend({
-    unicode: function(){
-        var reg = amz.regexp("([^\\x00-\\xff])", "g");
-
-        return this.valueOf().replace(reg, function(all, s) {
+amz.string.unicode = function(){
+    var reg = /([^\x00-\xff])/g,
+        replacer = function(all, s) {
             return "\\u"+ s.charCodeAt(0).toString(16);
-        });
+        };
+
+    // main function
+    return function(str){
+        return str.replace(reg, replacer);
     }
-});
+}();

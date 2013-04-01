@@ -24,9 +24,7 @@ amz.type = (function() {
         type = array[i];
         types[ "[object "+ type +"]" ] = type.toLowerCase();
 
-        amz[ "is"+ type ] = function( unknow ) {
-            return amz.type( unknow ) == type.toLowerCase();
-        }
+        amz[ "is"+ type ] = new Function("unknow", "return amz.type(unknow) == \""+ type.toLowerCase() +"\"");
     }
 
     // main function

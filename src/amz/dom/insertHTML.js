@@ -1,11 +1,10 @@
-///import amz.g;
-///import amz.util;
+///import amz.dom;
 
 /**
  * @description 在目标元素的指定位置插入HTML代码
- * @name amz.util.insertHTML
+ * @name amz.dom.insertHTML
  * @function
- * @grammar amz.util.insertHTML(element, position, html)
+ * @grammar amz.dom.insertHTML(element, position, html)
  * @param {HTMLElement|string} element 目标元素或目标元素的id
  * @param {string} position  插入html的位置信息，取值为beforeBegin,afterBegin,beforeEnd,afterEnd，大小写不敏感
  * @param {string} html 要插入的html
@@ -15,8 +14,8 @@
  *             
  * @return {HTMLElement} 目标元素
  */
-amz.util.insertHTML = function (element, position, html) {
-    var range, begin, el = amz.g(element);
+amz.dom.insertHTML = function (element, position, html) {
+    var range, begin, el = amz.dom(element);
 
     if (el.insertAdjacentHTML) {
         el.insertAdjacentHTML(position, html);

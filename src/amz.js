@@ -2,7 +2,7 @@
  * JavaScript framework: amz
  * Copyright (c) 2010 meizz, http://www.meizz.com/amz/
  *
- * http://www.meizz.com/amz/license/ MIT-style license
+ * http://www.opensource.org/licenses/MIT
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software
  */
@@ -43,7 +43,7 @@
  * @return  {ArrayLike}     first ArrayLike
  */
 var amz = amz || function( selector, context ) {
-    return amz.dom ? amz.dom( selector, context ) : null;
+    return amz.$ ? amz.$( selector, context ) : null;
 };
 
 amz.version = "20120401";

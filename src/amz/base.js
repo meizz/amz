@@ -9,4 +9,4 @@
  * @object
  * @name amz.base
  */
-amz.base = amz.base || {};
+amz.base = amz.base || {blank: function(){}};

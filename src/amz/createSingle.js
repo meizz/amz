@@ -1,4 +1,4 @@
-///import amz._extend;
+///import amz.extend;
 ///import amz.isString;
 ///import amz.base.Class;
 
@@ -20,6 +20,6 @@
 amz.createSingle = function (methods, type) {
     var me = new amz.base.Class();
     amz.isString(type) && ( me._type_ = type );
-    return amz._extend(me, methods);
+    return amz.extend(me, methods);
 };
 

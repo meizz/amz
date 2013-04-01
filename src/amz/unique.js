@@ -23,9 +23,10 @@ amz.unique = function (list, fn) {
         return result;
     }
 
+    // main
     return function(list, fn) {
-        if (!amz.isArrayLikelist)) return list;
-        amz.isFunction(fn) || ( fn = isEqual );
+        if ( !amz.isArrayLike(list) ) return list;
+        amz.isFunction( fn ) || ( fn = isEqual );
 
         var len = list.length,
             result = cloneList(list),

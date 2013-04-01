@@ -1,4 +1,4 @@
-///import amz;
+///import amz.dom;
 
 /**
  * @description 从文档中获取指定的DOM元素
@@ -11,15 +11,4 @@
  * @param {String|Element|jQuery|TangramDOM} obj 元素的ID名称或者直接传入元素本身
  * @return {Element} 如果传入的ID是不存在的则返回Null
  */
-amz.g = function(obj, owner) {
-    //修改IE下 amz.g(amz.g('dose_not_exist_id'))报错的bug，by Meizz, dengping
-    if (!obj) return null;
-    if ('string' == typeof obj || obj instanceof String) {
-        return (owner||document).getElementById(obj);
-    } else if (obj.nodeName && (obj.nodeType == 1 || obj.nodeType == 9)) {
-        return obj;
-    } else if (obj[0] && obj[0].nodeName ) {
-        return obj[0];
-    }
-    return null;
-};
+amz.g = amz.dom;

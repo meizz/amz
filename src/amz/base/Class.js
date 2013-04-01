@@ -3,7 +3,7 @@
 ///import amz.isArray;
 ///import amz.isString;
 ///import amz.isFunction;
-///import amz._extend;
+///import amz.extend;
 
 /**
  * @description Tangram继承机制提供的一个基类，用户可以通过继承amz.base.Class来获取它的属性及方法。
@@ -29,7 +29,7 @@ amz.base.Class = (function() {
 })();
 
 
-amz._extend(amz.base.Class.prototype, {
+amz.extend(amz.base.Class.prototype, {
     /*
      * 重载了默认的toString方法，使得返回信息更加准确一些。
      * 20111219 meizz 为支持老版本的className属性，以后统一改成 _type_
@@ -58,7 +58,8 @@ amz._extend(amz.base.Class.prototype, {
             }
 
             for (var pro in this) {
-                typeof this[pro] != "function" && delete this[pro];
+                if ( !amz.isFunction(this[pro]) ) delete this[pro];
+                else this[pro] = amz.base.blank;
             }
 
             this.disposed = true;   //20100716
@@ -77,7 +78,7 @@ amz._extend(amz.base.Class.prototype, {
     ,fire: function(event, options) {
         amz.isString(event) && (event = new amz.base.Event(event));
 
-        var i, n, list
+        var i, n, list, item
             , t=this._listeners_
             , type=event.type
             // 20121023 mz 修正事件派发多参数时，参数的正确性验证
@@ -85,24 +86,21 @@ amz._extend(amz.base.Class.prototype, {
         !t && (t = this._listeners_ = {});
 
         // 20100603 添加本方法的第二个参数，将 options extend到event中去传递
-        amz._extend(event, options || {});
+        amz.extend(event, options || {});
 
         event.target = event.target || this;
         event.currentTarget = this;
 
-        type.indexOf("on") != 0 && (type = "on" + type);
+        type.indexOf("on") && (type = "on" + type);
 
         amz.isFunction(this[type]) && this[type].apply(this, argu);
         (i=this._options) && amz.isFunction(i[type]) && i[type].apply(this, argu);
 
-        if (amz.isArray(list = t[type])) {
-            for (i=0, n=list.length; i<n; i++) {
-                list[i].apply(this, argu);
-            }
-
-            if (list.once) {
-                for(i=list.once.length-1; i>-1; i--) list.splice(list.once[i], 1);
-                delete list.once;
+        if ( list = t[type] ) {
+            for ( i=list.length-1; i>-1; i-- ) {
+                item = list[i]; // dispose in handler
+                item && item.handler.apply( this, argu ); //
+                item && item.once && list.splice( i, 1 );
             }
         }
 
@@ -124,14 +122,10 @@ amz._extend(amz.base.Class.prototype, {
         var list, t = this._listeners_;
         !t && (t = this._listeners_ = {});
 
-        type.indexOf("on") != 0 && (type = "on" + type);
+        type.indexOf("on") && (type = "on" + type);
 
         !amz.isArray(list = t[type]) && (list = t[type] = []);
-        if (once) {
-            !list.once && (list.once = []);
-            list.once.push(list.length);
-        }
-        t[type].push( handler );
+        t[type].unshift( {handler: handler, once: !!once} );
 
         return this;
     }
@@ -151,14 +145,14 @@ amz._extend(amz.base.Class.prototype, {
     ,off: function(type, handler) {
         var i, list,
             t = this._listeners_;
-        if (!t) return;
+        if (!t) return this;
 
         // remove all event listener
         if (typeof type == "undefined") {
             for (i in t) {
                 delete t[i];
             }
-            return;
+            return this;
         }
 
         type.indexOf("on") && (type = "on" + type);
@@ -169,7 +163,7 @@ amz._extend(amz.base.Class.prototype, {
         } else if (list = t[type]) {
 
             for (i = list.length - 1; i >= 0; i--) {
-                list[i] === handler && list.splice(i, 1);
+                list[i].handler === handler && list.splice(i, 1);
             }
         }
 
@@ -184,7 +178,7 @@ amz._extend(amz.base.Class.prototype, {
  * @return  {object}            实例对象
  */
 window["amzInstance"] = function(guid) {
-    return amz._global_._instances_[ guid ];
+    return window[amz.guid]._instances_[ guid ];
 }
 
 

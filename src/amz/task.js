@@ -7,7 +7,7 @@
  * @create 2012-11-20
  * @function 
  * @name amz.task
- * @grammar amz.string(fn)
+ * @grammar amz.task(fn)
  * @param   {Function}  fn  准备要做的事
  * @return  {$Task}         返回一个Task对象
  */

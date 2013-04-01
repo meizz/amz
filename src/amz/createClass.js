@@ -1,4 +1,4 @@
-///import amz._extend;
+///import amz.extend;
 ///import amz.isString;
 ///import amz.isFunction;
 ///import amz.base.Class;
@@ -43,11 +43,11 @@ amz.createClass = /**@function*/function(constructor, type, options) {
         }
     };
 
-    amz._extend(fn, {
+    amz.extend(fn, {
         superClass: options.superClass || amz.base.Class
 
         ,inherits: function(superClass){
-            if (typeof superClass != "function") return fn;
+            if ( !amz.isFunction(superClass) ) return fn;
 
             var C = function(){};
             C.prototype = (fn.superClass = superClass).prototype;
@@ -55,7 +55,7 @@ amz.createClass = /**@function*/function(constructor, type, options) {
             // 继承父类的原型（prototype)链
             var fp = fn.prototype = new C();
             // 继承传参进来的构造器的 prototype 不会丢
-            amz._extend(fn.prototype, constructor.prototype);
+            amz.extend(fn.prototype, constructor.prototype);
             // 修正这种继承方式带来的 constructor 混乱的问题
             fp.constructor = constructor;
 
@@ -63,14 +63,14 @@ amz.createClass = /**@function*/function(constructor, type, options) {
         }
         ,register: function(hook, methods) {
             (fn._reg_ || (fn._reg_ = [])).push( hook );
-            methods && amz._extend(fn.prototype, methods);
+            methods && amz.extend(fn.prototype, methods);
             return fn;
         }
-        ,extend: function(json){amz._extend(fn.prototype, json); return fn;}
+        ,extend: function(json){amz.extend(fn.prototype, json); return fn;}
     });
 
     type = amz.isString(type) ? type : options.className || options.type;
-    amz.isString(type) && (constructor.prototype._type_ = type);
+    amz.isString(type) && ( constructor.prototype._type_ = type );
     amz.isFunction(fn.superClass) && fn.inherits(fn.superClass);
 
     return fn;

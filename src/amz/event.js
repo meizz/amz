@@ -2,7 +2,7 @@
 ///import amz.type;
 ///import amz.isString;
 ///import amz.isFunction;
-///import amz._extend;
+///import amz.extend;
 ///import amz.createChain;
 
 /**
@@ -55,7 +55,7 @@ amz.createChain("event",
             }
 
             if( e.extraData ) {
-                amz._extend( me, e.extraData );
+                amz.extend( me, e.extraData );
             }
 
             me.target = me.srcElement = e.srcElement || (
